@@ -1,15 +1,16 @@
 ; Example from paper
 
-;(define-fun x ()Int -50)
+(define-fun x () Int -50)
 
-(declare-fun loopFuncX (Int Int) Int)
-(declare-fun loopFuncY (Int Int) Int)
+(define-fun loopFuncX ((x Int) (y Int)) Int (+ x y))
+(define-fun loopFuncY ((x Int) (y Int)) Int (+ y 1))
+(define-fun loopFun ((x Int) (y Int)) Bool
+	(ite (< x 0)
+		 (loopFun (+ x y) (+ y 1))
+		 (> y 0)))
 
-(assert (forall ((x Int) (y Int))
-			(ite (< x 0) 
-				(and (= (loopFuncX x y) (+ x y))
-					 (= (loopFuncY x y) (+ y 1)))
-				(> y 0))))
+(declare-const y Int)
+(assert (loopFun x y))
 
 (check-sat)
 (get-model)
