@@ -60,6 +60,7 @@
 													  (map (lambda (constraint) (add-implication-condition constraint (invert-condition condition))) (find-constraints iffalse)))]
 		[(list 'while condition loop afterloop) (append (map (lambda (constraint) (add-implication-condition constraint condition)) (find-constraints loop))
 														(map (lambda (constraint) (add-implication-condition constraint (invert-condition condition))) (find-constraints afterloop)))]
+		[(list (list _ ...) ...) (flatten (map find-constraints expr))]
 		[else (error "Unsupported operation")]))
 
 (check-equal? (find-constraints '(set x 10)) (list (implication 'true '(I ((x 10))))))
@@ -69,3 +70,7 @@
 																	   			  (implication '(>= x 0) '(I ((x 2))))))
 (check-equal? (find-constraints '(while (< x 0) (set x 1) (set x 2))) (list (implication '(< x 0) '(I ((x 1))))
 																	   (implication '(>= x 0) '(I ((x 2))))))
+(check-equal? (find-constraints '((set x 10) (while (>= x 0) (set x (- x 1)) (assert (< x 0)))))
+	(list (implication 'true '(I ((x 10))))
+		  (implication '(>= x 0) '(I ((x (- x 1)))))
+		  (implication '(< x 0) '(< x 0))))
