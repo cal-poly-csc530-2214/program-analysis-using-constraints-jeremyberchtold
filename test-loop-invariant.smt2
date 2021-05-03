@@ -1,16 +1,20 @@
 ; Example from paper
+(set-logic QBVF)
 
-(define-fun x () Int -50)
+(declare-const a1 Int)
+(declare-const a2 Int)
+(declare-const a3 Int)
+(declare-const a4 Int)
+(declare-const a5 Int)
+(declare-const a6 Int)
 
-(define-fun loopFuncX ((x Int) (y Int)) Int (+ x y))
-(define-fun loopFuncY ((x Int) (y Int)) Int (+ y 1))
-(define-fun loopFun ((x Int) (y Int)) Bool
-	(ite (< x 0)
-		 (loopFun (+ x y) (+ y 1))
-		 (> y 0)))
+(define-fun I ((x Int) (y Int)) Bool
+	(or (>= (+ (* a1 x) (* a2 y) a3) 0)
+		(>= (+ (* a4 x) (* a5 y) a6) 0)))
 
-(declare-const y Int)
-(assert (loopFun x y))
+(assert (or (not true) (forall ((y Int)) (I -50 y))))
+(assert (forall ((x Int) (y Int)) (or (not (and (I x y) (< x 0))) (I (+ x 1) (+ x y)))))
+(assert (forall ((x Int) (y Int)) (or (not (and (I x y) (>= x 0))) (> y 0))))
 
 (check-sat)
 (get-model)
