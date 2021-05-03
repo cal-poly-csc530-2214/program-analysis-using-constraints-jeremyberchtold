@@ -55,6 +55,7 @@
 (define (find-constraints expr)
 	(match expr
 		[(list 'set var val) (list (implication 'true (list 'I (list (list var val)))))]
+		[(list 'assert expr) (list (implication 'true expr))]
 		[(list 'ite condition iftrue iffalse) (append (map (lambda (constraint) (add-implication-condition constraint condition)) (find-constraints iftrue))
 													  (map (lambda (constraint) (add-implication-condition constraint (invert-condition condition))) (find-constraints iffalse)))]
 		[else (error "Unsupported operation")]))
@@ -62,5 +63,5 @@
 (check-equal? (find-constraints '(set x 10)) (list (implication 'true '(I ((x 10))))))
 (check-equal? (find-constraints '(ite (< x 0) (set x 1) (set x 2))) (list (implication '(< x 0) '(I ((x 1))))
 																	   (implication '(>= x 0) '(I ((x 2))))))
-;(check-equal? (find-constraints '(ite (< x 0) (assert (< x -5)) (set x 2))) (list (implication '(< x 0) '(I ((x 1))))
-;																	   (implication '(>= x 0) '(I ((x 2))))))
+(check-equal? (find-constraints '(ite (< x 0) (assert (< x -5)) (set x 2))) (list (implication '(< x 0) '(< x -5))
+																	   			  (implication '(>= x 0) '(I ((x 2))))))
