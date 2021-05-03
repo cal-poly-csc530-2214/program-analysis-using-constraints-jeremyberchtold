@@ -1,5 +1,5 @@
 ; Example from paper
-(set-logic QBVF)
+;(set-logic QBVF)
 
 (declare-const a1 Int)
 (declare-const a2 Int)
@@ -13,8 +13,7 @@
 		(>= (+ (* a4 x) (* a5 y) a6) 0)))
 
 (assert (or (not true) (forall ((y Int)) (I -50 y))))
-(assert (forall ((x Int) (y Int)) (or (not (and (I x y) (< x 0))) (I (+ x 1) (+ x y)))))
-(assert (forall ((x Int) (y Int)) (or (not (and (I x y) (>= x 0))) (> y 0))))
+(assert (forall ((x Int) (y Int)) (or (< y 0) (I (+ x y) (+ y 1)))))
 
 (check-sat)
 (get-model)
